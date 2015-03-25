@@ -1,20 +1,20 @@
-var FixClient = require('./lib/client.js'),
+var FixProtocol = require('./lib/protocol.js'),
     tls       = require('tls'),
     moment    = require('moment');
 
 // FIX account credentials
-var host = 'client-md-ate.lmaxtrader.com';
+var host = 'protocol-md-ate.lmaxtrader.com';
 var port = 443;
 var username = 'yourusername';
 var password = 'your password';
 
-var client = new FixClient();
+var protocol = new FixProtocol();
 
-var loginMessage = client.message({
+var loginMessage = protocol.encode({
     BeginString:     'FIX.4.4',
     BodyLength:      '%l',
     MsgType:         'A',
-    MsgSeqNum:       client.seqNum(),
+    MsgSeqNum:       protocol.seqNum(),
     SenderCompID:    'Amaroks',
     SendingTime:     moment().subtract(3, "hours").format("YYYYMMDD-HH:mm:ss.SSS"),
     TargetCompID:    'LMXBDM',
@@ -25,13 +25,13 @@ var loginMessage = client.message({
     ResetSeqNumFlag: 'Y'
 }, true);
 
-var quoteMessage = client.message({
+var quoteMessage = protocol.encode({
     BeginString:             'FIX.4.4',
     //body length should always be %l
     // it will be replaced with actual length
     BodyLength:              '%l',
     MsgType:                 'V',
-    MsgSeqNum:               client.seqNum(),
+    MsgSeqNum:               protocol.seqNum(),
     // username
     SenderCompID:            'Amaroks',
     // This should be very accurate otherwise the engine
@@ -72,16 +72,16 @@ cleartextStream.setEncoding('utf8');
 cleartextStream.on('data', function (data) {
 
     // parse the FIX message
-    var data = client.read(data);
+    var data = protocol.decode(data);
 
 
     // if server sent a heart beat, We need to respond
     if (data.MsgType === '1') {
-        var beat = client.message({
+        var beat = protocol.encode({
             BeginString:  'FIX.4.4',
             BodyLength:   '%l',
             MsgType:      0,
-            MsgSeqNum:    client.seqNum(),
+            MsgSeqNum:    protocol.seqNum(),
             SenderCompID: 'Amaroks',
             SendingTime:  moment().subtract(3, "hours").format("YYYYMMDD-HH:mm:ss.SSS"),
             TargetCompID: 'LMXBDM',
