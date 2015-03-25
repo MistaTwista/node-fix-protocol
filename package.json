@@ -1,0 +1,9 @@
+{
+  "name": "node-fix-protocol",
+  "version": "0.0.1",
+  "description": "Simple FIX client",
+  "author": "tony.pizzicato",
+  "dependencies": {
+    "moment": "^2.9.0"
+  }
+}
