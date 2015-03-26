@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Simple FIX client",
   "author": "tony.pizzicato",
+  "main": "./lib/protocol.js",
   "dependencies": {
     "moment": "^2.9.0"
   }
